@@ -13,7 +13,7 @@ if uploaded_file:
     img = np.array(image)
 
     st.subheader("Ảnh gốc")
-    st.image(img, caption="Ảnh gốc", use_column_width=True)
+    st.image(img, caption="Ảnh gốc", use_container_width=True)
 
     # Chọn loại xử lý
     option = st.sidebar.radio(
