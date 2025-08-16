@@ -3,7 +3,7 @@ import numpy as np
 import streamlit as st
 from PIL import Image
 
-st.title("📸 Demo xử lý ảnh với OpenCV & Streamlit")
+st.title("📸 Demo xử lý ảnh")
 
 # Upload ảnh
 uploaded_file = st.file_uploader("Tải ảnh lên", type=["jpg", "jpeg", "png"])
