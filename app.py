@@ -1,49 +1,45 @@
+import streamlit as st
 import cv2
 import numpy as np
-import streamlit as st
+from PIL import Image
 
-# ===== Các hàm xử lý =====
-def negative(img): return 255 - img
+st.title("Demo xử lý ảnh với OpenCV 🎨")
 
-def log_transform(img):
-    c = 255 / np.log(1 + np.max(img))
-    return np.uint8(c * np.log(img.astype(np.float64) + 1))
-
-def gamma_correction(img, gamma=0.5):
-    return np.array(255 * (img/255.0)**gamma, dtype='uint8')
-
-def hist_equalization(img):
-    return cv2.equalizeHist(img)
-
-def clahe_equalization(img, clip=2.0, tile=(8,8)):
-    clahe = cv2.createCLAHE(clipLimit=clip, tileGridSize=tile)
-    return clahe.apply(img)
-
-# ===== Giao diện Streamlit =====
-st.title("Demo xử lý ảnh - Point Processing")
-
-uploaded_file = st.file_uploader("Chọn ảnh", type=["jpg","jpeg","png"])
+# Upload ảnh
+uploaded_file = st.file_uploader("Tải ảnh lên", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
-    file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
-    img = cv2.imdecode(file_bytes, cv2.IMREAD_GRAYSCALE)
+    # Đọc ảnh bằng PIL rồi chuyển sang OpenCV
+    image = Image.open(uploaded_file)
+    img = np.array(image)
+    img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)  # giữ chuẩn BGR cho xử lý
 
-    st.image(img, caption="Ảnh gốc", use_container_width=True)
+    # Hiển thị ảnh gốc (chuyển sang RGB khi show)
+    st.image(cv2.cvtColor(img, cv2.COLOR_BGR2RGB), caption="Ảnh gốc", use_container_width=True)
 
-    option = st.selectbox("Chọn phương pháp xử lý", 
-        ["Negative", "Log Transform", "Gamma Correction", "Histogram Equalization", "CLAHE"])
+    st.subheader("Chọn loại xử lý ảnh")
 
-    if option == "Negative":
-        result = negative(img)
-    elif option == "Log Transform":
-        result = log_transform(img)
-    elif option == "Gamma Correction":
-        gamma = st.slider("Chọn gamma", 0.1, 3.0, 0.5)
-        result = gamma_correction(img, gamma)
-    elif option == "Histogram Equalization":
-        result = hist_equalization(img)
-    elif option == "CLAHE":
-        clip = st.slider("clipLimit", 1.0, 5.0, 2.0)
-        result = clahe_equalization(img, clip)
+    option = st.selectbox(
+        "Chọn một bộ lọc:",
+        ("Giữ nguyên", "Làm mờ Gaussian", "Làm sắc nét", "Canny Edge Detection")
+    )
 
-    st.image(result, caption="Ảnh sau xử lý", use_container_width=True)
+    # Xử lý theo lựa chọn
+    if option == "Giữ nguyên":
+        result = img
+    elif option == "Làm mờ Gaussian":
+        result = cv2.GaussianBlur(img, (15, 15), 0)
+    elif option == "Làm sắc nét":
+        kernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
+        result = cv2.filter2D(img, -1, kernel)
+    elif option == "Canny Edge Detection":
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        result = cv2.Canny(gray, 100, 200)
+        # ảnh Canny là grayscale → show trực tiếp
+        st.image(result, caption="Ảnh sau xử lý (Canny)", use_container_width=True)
+        result = None  # tránh show thêm bên dưới
+
+    # Hiển thị ảnh kết quả (nếu còn giữ màu)
+    if result is not None:
+        st.image(cv2.cvtColor(result, cv2.COLOR_BGR2RGB),
+                 caption=f"Ảnh sau xử lý: {option}", use_container_width=True)
