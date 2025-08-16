@@ -28,7 +28,7 @@ if uploaded_file is not None:
     file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
     img = cv2.imdecode(file_bytes, cv2.IMREAD_GRAYSCALE)
 
-    st.image(img, caption="Ảnh gốc", use_column_width=True)
+    st.image(img, caption="Ảnh gốc", use_container_width=True)
 
     option = st.selectbox("Chọn phương pháp xử lý", 
         ["Negative", "Log Transform", "Gamma Correction", "Histogram Equalization", "CLAHE"])
@@ -46,4 +46,4 @@ if uploaded_file is not None:
         clip = st.slider("clipLimit", 1.0, 5.0, 2.0)
         result = clahe_equalization(img, clip)
 
-    st.image(result, caption="Ảnh sau xử lý", use_column_width=True)
+    st.image(result, caption="Ảnh sau xử lý", use_container_width=True)
