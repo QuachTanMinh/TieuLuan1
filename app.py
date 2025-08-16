@@ -49,7 +49,7 @@ if uploaded_file:
 
         st.image([gray, clahe_img, bilateral, edges],
                  caption=["Grayscale", "CLAHE", "Bilateral", "Canny Edge"],
-                 use_column_width=True, channels="GRAY")
+                 use_container_width=True, channels="GRAY")
 
     # ======================================
     # 2. Cải thiện ảnh vệ tinh
@@ -75,7 +75,7 @@ if uploaded_file:
 
         st.image([hist_eq, unsharp, bilateral],
                  caption=["Cân bằng Histogram", "Tăng sắc nét (Unsharp)", "Làm mượt Bilateral"],
-                 use_column_width=True)
+                 use_container_width=True)
 
     # ======================================
     # 3. Ảnh ánh sáng kém
@@ -101,4 +101,4 @@ if uploaded_file:
 
         st.image([img, img_clahe, denoised],
                  caption=["Ảnh gốc", "Tăng sáng + CLAHE", "Giảm nhiễu"],
-                 use_column_width=True)
+                 use_container_width=True)
